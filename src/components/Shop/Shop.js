@@ -13,10 +13,23 @@ currentPage (page)
 */
 
 const Shop = () => {
-    const { products, count } = useLoaderData();
+    // const { products, count } = useLoaderData();
+    const [products, setProducts] = useState([]);
+    const [count, setCount] = useState(0);
     const [cart, setCart] = useState([]);
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(10);
+
+    useEffect(() => {
+        const url = `http://localhost:5000/products?page=${page}&size=${size}`;
+        console.log(page, size);
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                setCount(data.count);
+                setProducts(data.products);
+            })
+    }, [page, size])
 
     const pages = Math.ceil(count / size);
 
@@ -76,7 +89,7 @@ const Shop = () => {
                 </Cart>
             </div>
             <div className="pagination">
-                <p>Currently selected page: {page}</p>
+                <p>Currently selected page: {page} and size: {size}</p>
                 {
                     [...Array(pages).keys()].map(number => <button
                         key={number}
@@ -86,6 +99,12 @@ const Shop = () => {
                         {number}
                     </button>)
                 }
+                <select onChange={event => setSize(event.target.value)}>
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                </select>
             </div>
         </div>
     );
